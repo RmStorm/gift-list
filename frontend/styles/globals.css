@@ -15,9 +15,22 @@ a {
   box-sizing: border-box;
 }
 
-.ui.cards > .ui.card > .card-img.image > img{
-	height: 270px;
+.card > img{
+	height: 275px;
 	object-fit: contain;
 	object-position: center;
-	margin: 0 auto;
+  margin: 0 auto;
+  padding: 10px;
 }
+
+.card-footer{
+  position:absolute;
+    bottom:0;
+    left: 0;
+    width:100%;
+  }
+
+.card.border-default > .card-body{
+padding-bottom:50px;
+}
+    

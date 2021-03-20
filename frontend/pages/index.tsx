@@ -1,18 +1,19 @@
 import Head from "next/head";
 import Link from "next/link";
+import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "../styles/Home.module.css";
 
 export default function Home(): React.ReactNode {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Roald & Astrid</title>
+        <title>Astrid & Roald</title>
 
         <link href="/favicon.ico" rel="icon" />
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Roald & Astrid</h1>
+        <h1 className={styles.title}>Astrid & Roald gaan trouwen!</h1>
 
         <p className={styles.description}>
           Get started by editing{" "}

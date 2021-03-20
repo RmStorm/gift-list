@@ -1,5 +1,5 @@
-# gift-list
-A small website to keep track of gifts for a wedding!
+# wedding-site
+A small website for a wedding! Includes a list to keep track of gifts!
 
 ## Getting Started
 

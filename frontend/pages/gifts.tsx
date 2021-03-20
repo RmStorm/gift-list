@@ -1,30 +1,27 @@
 import Head from "next/head";
 import Link from "next/link";
 import useSWR from "swr";
-import { Card, Icon, Image, Container, Button } from "semantic-ui-react";
-
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import { Gift } from "react-bootstrap-icons";
 import styles from "../styles/Home.module.css";
-import "semantic-ui-css/semantic.min.css";
 
 const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args).then((res) => res.json());
 
 export default function Gifts(): React.ReactNode {
-  console.log("test");
   const { data, error } = useSWR("/api/backend/gifts", fetcher);
 
   if (error) return <div>failed to load</div>;
   if (!data) return <div>loading...</div>;
 
-  console.log(data);
-  console.log(data[0].image_url);
-  const yada = data[0].image_url; // "https://react.semantic-ui.com/images/avatar/large/matthew.png";
-
   return (
     <div className={styles.container}>
       <Head>
         <title>Roald & Astrid</title>
-
         <link href="/favicon.ico" rel="icon" />
       </Head>
 
@@ -39,39 +36,72 @@ export default function Gifts(): React.ReactNode {
           <code className={styles.code}>pages/index.js</code>
         </p>
         <Container>
-          <Card.Group itemsPerRow={3}>
+          <Row xs={1} sm={1} md={2} lg={3} xl={4}>
             {data.map((gift) => {
               return (
-                <Card key={gift.name}>
-                  <Image src={gift.image_url} wrapped className="card-img" />
-                  <Card.Content>
-                    <Card.Header>{gift.name}</Card.Header>
-                    <Card.Meta>
-                      {gift.urls.map((link: string, i: number) => {
-                        return (
-                          <a
-                            key={link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href={link}
-                          >
-                            {`link ${i + 1}`}
-                          </a>
-                        );
-                      })}
-                    </Card.Meta>
-                    <Card.Description>{gift.description}</Card.Description>
-                  </Card.Content>
-                  <Card.Content extra>
-                    <a>
-                      <Icon name="gift" />
-                      wished: {gift.desired_amount}
-                    </a>
-                  </Card.Content>
-                </Card>
+                <Col
+                  key={gift.name}
+                  className="align-items-stretch d-flex py-2"
+                >
+                  <Card border="default">
+                    <Card.Img variant="top" src={gift.image_url} />
+                    <Card.Body>
+                      <Card.Title>{gift.name}</Card.Title>
+                      <Card.Text>{gift.description}</Card.Text>
+                      {/* <Button variant="primary">Go somewhere</Button> */}
+                      {/* <Card.Footer>
+                      <small className="text-muted">
+                        {gift.urls.map((link: string, i: number) => {
+                          return (
+                            <a
+                              key={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              href={link}
+                            >
+                              {`link ${i + 1}`}
+                            </a>
+                          );
+                        })}
+                      </small>
+                    </Card.Footer> */}
+                      <Card.Footer className="text-muted">
+                        <Gift className="mr-2" />
+                        wished: {gift.desired_amount}
+                      </Card.Footer>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                // <Card key={gift.name}>
+                //   <Image src={gift.image_url} wrapped className="card-img" />
+                //   <Card.Content>
+                //     <Card.Header>{gift.name}</Card.Header>
+                //     <Card.Meta>
+                //       {gift.urls.map((link: string, i: number) => {
+                //         return (
+                //           <a
+                //             key={link}
+                //             target="_blank"
+                //             rel="noopener noreferrer"
+                //             href={link}
+                //           >
+                //             {`link ${i + 1}`}
+                //           </a>
+                //         );
+                //       })}
+                //     </Card.Meta>
+                //     <Card.Description>{gift.description}</Card.Description>
+                //   </Card.Content>
+                //   <Card.Content extra>
+                //     <a>
+                //       <Icon name="gift" />
+                //       wished: {gift.desired_amount}
+                //     </a>
+                //   </Card.Content>
+                // </Card>
               );
             })}
-          </Card.Group>
+          </Row>
         </Container>
       </main>
     </div>

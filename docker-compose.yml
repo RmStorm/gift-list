@@ -4,16 +4,23 @@ services:
   gift-list-api:
     build: "./api"
     ports:
-      - "8501:5000"
+      - "127.0.0.1:8501:5000"
     env_file:
       - ./api/config/localdocker.env
+
+  gift-list-frontend:
+    build: "./frontend"
+    ports:
+      - "127.0.0.1:8500:3000"
+    env_file:
+      - ./frontend/config/localdocker.env
 
   gift-list-db:
     image: postgres:13.1-alpine
     env_file:
       - ./api/config/localdocker.env
     ports:
-      - "8502:5432"
+      - "127.0.0.1:8502:5432"
 
   db-init:
     build: "./db-init"
@@ -21,10 +28,3 @@ services:
       - ./api/config/localdocker.env
     volumes:
       - ./db-init/sql:/app/sql
-
-  gift-list-frontend:
-    build: "./frontend"
-    ports:
-      - "8500:3000"
-    env_file:
-      - ./frontend/config/localdocker.env
