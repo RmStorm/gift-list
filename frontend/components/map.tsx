@@ -2,7 +2,7 @@ import { LatLngTuple } from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 // import "leaflet/dist/leaflet.css";
 
-const Map = () => {
+const Map: React.FC = () => {
   const syverstad: LatLngTuple = [59.8480967314304, 10.483232275340505];
   return (
     <MapContainer

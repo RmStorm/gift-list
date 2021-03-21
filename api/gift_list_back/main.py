@@ -44,13 +44,16 @@ LOGGING_CONFIG = {
 }
 
 if __name__ == "__main__":
+    env_files = [Path(__file__).parents[2] / "secrets" / "postgres_credentials.env"]
     if Path.cwd() == Path("/app"):
         in_docker = True
-        env_file = Path(__file__).parents[1] / "config" / "localdocker.env"
+        env_files.append(Path(__file__).parents[1] / "config" / "localdocker.env")
     else:
         in_docker = False
-        env_file = Path(__file__).parents[1] / "config" / "localdev.env"
-    load_dotenv(dotenv_path=env_file, verbose=False)
+        env_files.append(Path(__file__).parents[1] / "config" / "localdev.env")
+
+    for env_file in env_files:
+        load_dotenv(dotenv_path=env_file, verbose=False)
 
     if in_docker:
         app.add_middleware(PrometheusMiddleware)

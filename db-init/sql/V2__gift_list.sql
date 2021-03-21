@@ -1,4 +1,4 @@
-create table if not exists gifts (
+CREATE TABLE IF NOT EXISTS gifts (
 	id serial  NOT NULL primary key,
     modified_at timestamptz  NOT NULL DEFAULT now(),
 	name Text NOT NULL,

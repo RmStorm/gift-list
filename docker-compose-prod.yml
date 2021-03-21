@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  gift-list-api:
+    build: "./api"
+    ports:
+      - "127.0.0.1:8501:5000"
+    env_file:
+      - ./api/config/localdocker.env
+      - ./secrets/postgres_credentials.env
+
+  gift-list-frontend:
+    build: "./frontend"
+    ports:
+      - "127.0.0.1:8500:3000"
+    env_file:
+      - ./frontend/config/localdocker.env
+      - ./secrets/postgres_credentials.env
+      - ./secrets/google_oauth.env

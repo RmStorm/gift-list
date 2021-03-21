@@ -21,5 +21,6 @@ COPY --from=build /build/.next ./.next
 COPY --from=build /build/public ./public
 
 RUN npm install next
+
 EXPOSE 3000
 CMD npm run start
