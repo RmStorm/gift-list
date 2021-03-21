@@ -15,3 +15,24 @@ class GiftCreate(BaseModel):
 class Gift(GiftCreate):
     id: int
     modified_at: dt.datetime
+
+
+class GoogleToken(BaseModel):
+    iss: str
+    azp: str
+    aud: str
+    sub: str
+    email: str
+    email_verified: bool
+    at_hash: str
+    name: str
+    picture: str
+    given_name: str
+    family_name: str
+    locale: str
+    iat: str
+    exp: str
+    jti: str
+    alg: str
+    kid: str
+    typ: str

@@ -3,12 +3,18 @@ import logging
 from typing import List
 
 import asyncpg
+import requests
 from fastapi import FastAPI, Depends
+from fastapi.security import OAuth2PasswordBearer
 
-from schemas import Gift, GiftCreate
+from schemas import Gift, GiftCreate, GoogleToken
+
+GOOGLE_TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=YOUR_TOKEN_HERE"
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI(docs_url="/", title="GIFT LIST API", version="v1")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 class ApiPoolManager:
@@ -77,3 +83,14 @@ async def gifts(gift_list: List[GiftCreate], conn=Depends(api_pool_manager.get_c
             await conn.execute('''
                 INSERT INTO gifts(name, description, urls, image_url, desired_amount) VALUES($1, $2, $3, $4, $5)
                 ''', gift.name, gift.description, gift.urls, gift.image_url, gift.desired_amount)
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    r = requests.get(GOOGLE_TOKEN_INFO_URL, params={'id_token': token})
+    return GoogleToken.parse_obj(r.json())
+
+
+@app.post('/auth')
+async def auth(current_user: GoogleToken = Depends(get_current_user)):
+    logging.info(current_user)
+    return {"data": "here some data fo ya!", "user": current_user}
