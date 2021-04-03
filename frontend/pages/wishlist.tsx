@@ -29,31 +29,30 @@ export default function Gifts(): React.ReactNode {
           <link href="/favicon.ico" rel="icon" />
         </Head>
 
-        <main className={styles.main}>
-          <h1 className={styles.title}>Gifts</h1>
-          <Button href="/location">To Location</Button>
-          <p className={styles.description}>
-            Get started by editing{" "}
-            <Link href="/location">
-              <a>location</a>
-            </Link>
-            <code className={styles.code}>pages/index.js</code>
-          </p>
-          <Container>
-            <Row xs={1} sm={1} md={2} lg={3} xl={4}>
-              {data.map((gift) => {
-                return (
-                  <Col
-                    key={gift.name}
-                    className="align-items-stretch d-flex py-2"
-                  >
-                    <Card border="default">
-                      <Card.Img variant="top" src={gift.image_url} />
-                      <Card.Body>
-                        <Card.Title>{gift.name}</Card.Title>
-                        <Card.Text>{gift.description}</Card.Text>
-                        {/* <Button variant="primary">Go somewhere</Button> */}
-                        {/* <Card.Footer>
+        <h1 className={styles.title}>Gifts</h1>
+        <Button href="/location">To Location</Button>
+        <p className={styles.description}>
+          Get started by editing{" "}
+          <Link href="/location">
+            <a>location</a>
+          </Link>
+          <code className={styles.code}>pages/index.js</code>
+        </p>
+        <Container>
+          <Row xs={1} sm={1} md={2} lg={3} xl={4}>
+            {data.map((gift) => {
+              return (
+                <Col
+                  key={gift.name}
+                  className="align-items-stretch d-flex py-2"
+                >
+                  <Card border="default">
+                    <Card.Img variant="top" src={gift.image_url} />
+                    <Card.Body>
+                      <Card.Title>{gift.name}</Card.Title>
+                      <Card.Text>{gift.description}</Card.Text>
+                      {/* <Button variant="primary">Go somewhere</Button> */}
+                      {/* <Card.Footer>
                       <small className="text-muted">
                         {gift.urls.map((link: string, i: number) => {
                           return (
@@ -69,45 +68,44 @@ export default function Gifts(): React.ReactNode {
                         })}
                       </small>
                     </Card.Footer> */}
-                        <Card.Footer className="text-muted">
-                          <Gift className="mr-2" />
-                          wished: {gift.desired_amount}
-                        </Card.Footer>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  // <Card key={gift.name}>
-                  //   <Image src={gift.image_url} wrapped className="card-img" />
-                  //   <Card.Content>
-                  //     <Card.Header>{gift.name}</Card.Header>
-                  //     <Card.Meta>
-                  //       {gift.urls.map((link: string, i: number) => {
-                  //         return (
-                  //           <a
-                  //             key={link}
-                  //             target="_blank"
-                  //             rel="noopener noreferrer"
-                  //             href={link}
-                  //           >
-                  //             {`link ${i + 1}`}
-                  //           </a>
-                  //         );
-                  //       })}
-                  //     </Card.Meta>
-                  //     <Card.Description>{gift.description}</Card.Description>
-                  //   </Card.Content>
-                  //   <Card.Content extra>
-                  //     <a>
-                  //       <Icon name="gift" />
-                  //       wished: {gift.desired_amount}
-                  //     </a>
-                  //   </Card.Content>
-                  // </Card>
-                );
-              })}
-            </Row>
-          </Container>
-        </main>
+                      <Card.Footer className="text-muted">
+                        <Gift className="mr-2" />
+                        wished: {gift.desired_amount}
+                      </Card.Footer>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                // <Card key={gift.name}>
+                //   <Image src={gift.image_url} wrapped className="card-img" />
+                //   <Card.Content>
+                //     <Card.Header>{gift.name}</Card.Header>
+                //     <Card.Meta>
+                //       {gift.urls.map((link: string, i: number) => {
+                //         return (
+                //           <a
+                //             key={link}
+                //             target="_blank"
+                //             rel="noopener noreferrer"
+                //             href={link}
+                //           >
+                //             {`link ${i + 1}`}
+                //           </a>
+                //         );
+                //       })}
+                //     </Card.Meta>
+                //     <Card.Description>{gift.description}</Card.Description>
+                //   </Card.Content>
+                //   <Card.Content extra>
+                //     <a>
+                //       <Icon name="gift" />
+                //       wished: {gift.desired_amount}
+                //     </a>
+                //   </Card.Content>
+                // </Card>
+              );
+            })}
+          </Row>
+        </Container>
       </div>
     </>
   );

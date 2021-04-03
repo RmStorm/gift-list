@@ -36,7 +36,13 @@ export default function MyNavbar(): JSX.Element {
   const [session, loading] = useSession();
 
   return (
-    <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
+    <Navbar
+      collapseOnSelect
+      sticky="top"
+      expand="lg"
+      bg="light"
+      variant="light"
+    >
       <Container>
         <Navbar.Brand href="/">Home</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />

@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import { Image } from "react-bootstrap";
 import MyNavbar from "../components/navbar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -16,28 +17,16 @@ export default function Home(): React.ReactNode {
           <link href="/bouquet.png" rel="icon" />
         </Head>
         <main className={styles.main}>
-          <h1 className={styles.title}>Astrid & Roald gaan trouwen!</h1>
-
+          <h1 className={styles.title}>Astrid & Roald are getting married!</h1>
+          <Image src="/astrid_roald.jpeg" fluid />
           <p className={styles.description}>
-            Get started by editing{" "}
+            There will be a little more story here later on! Probably also some
+            planning stuff!! Possible even pictures of the{" "}
             <Link href="/location">
               <a>location</a>
             </Link>
-            <code className={styles.code}>pages/index.js</code>
+            .
           </p>
-
-          <div className={styles.grid}>
-            {" "}
-            <Link href="/index_old">
-              <a>oldindex</a>
-            </Link>
-          </div>
-          <div className={styles.grid}>
-            {" "}
-            <Link href="/gifts">
-              <a>gifts</a>
-            </Link>
-          </div>
         </main>
 
         <footer className={styles.footer}>
