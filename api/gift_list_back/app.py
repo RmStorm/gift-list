@@ -67,6 +67,10 @@ async def shutdown_event():
 async def root():
     return {"message": "Hello World"}
 
+@app.get("/test")
+async def root():
+    return {"message": "Hello World"}
+
 
 @app.get("/gifts")
 async def gifts(conn=Depends(api_pool_manager.get_conn)):

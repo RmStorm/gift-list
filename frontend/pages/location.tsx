@@ -2,6 +2,8 @@ import Head from "next/head";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import MyNavbar from "../components/navbar";
+import Footer from "../components/footer";
+import Header from "../components/header";
 
 import styles from "../styles/Home.module.css";
 
@@ -12,15 +14,14 @@ function Location(): React.ReactNode {
     <>
       <MyNavbar />
       <div className={styles.container}>
-        <Head>
-          <title>Party Place!!</title>
+        <Header>
           <link
             rel="stylesheet"
             href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
             integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
             crossOrigin=""
           />
-        </Head>
+        </Header>
         <h1>Location</h1>{" "}
         <h2>
           <Link href="/">
@@ -28,6 +29,7 @@ function Location(): React.ReactNode {
           </Link>
         </h2>
         <Map />
+        <Footer />
       </div>
     </>
   );

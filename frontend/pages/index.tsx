@@ -1,8 +1,8 @@
-import Head from "next/head";
 import Link from "next/link";
 import { Image } from "react-bootstrap";
 import MyNavbar from "../components/navbar";
 import Footer from "../components/footer";
+import Header from "../components/header";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "../styles/Home.module.css";
@@ -11,12 +11,8 @@ export default function Home(): React.ReactNode {
   return (
     <>
       <MyNavbar />
-
       <div className={styles.container}>
-        <Head>
-          <title>Astrid & Roald</title>
-          <link href="/bouquet.png" rel="icon" />
-        </Head>
+        <Header />
         <main className={styles.main}>
           <h1 className={styles.title}>Astrid & Roald are getting married!</h1>
           <Image src="/astrid_roald.jpeg" fluid />
@@ -29,7 +25,6 @@ export default function Home(): React.ReactNode {
             .
           </p>
         </main>
-
         <Footer />
       </div>
     </>

@@ -19,6 +19,7 @@ import { Gift } from "../types";
 
 import MyNavbar, { ALLOWED_EDIT_USERS } from "../components/navbar";
 import Footer from "../components/footer";
+import Header from "../components/header";
 
 const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args).then((res) => res.json());
@@ -166,10 +167,7 @@ export default function AstridList() {
   return (
     <>
       <MyNavbar />
-      <Head>
-        <title>Roald & Astrid</title>
-        <link href="/favicon.ico" rel="icon" />
-      </Head>
+      <Header />
       <Container>
         {data.map((gift) => {
           return (

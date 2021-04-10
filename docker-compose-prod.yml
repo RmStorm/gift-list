@@ -10,7 +10,10 @@ services:
       - ./secrets/postgres_credentials.env
 
   gift-list-frontend:
-    build: "./frontend"
+    build:
+      context: "./frontend"
+      args:
+        - WISH_LIST_GIFTS_ENDPOINT=$WISH_LIST_GIFTS_ENDPOINT
     ports:
       - "127.0.0.1:8500:3000"
     env_file:

@@ -10,6 +10,7 @@ ENV NODE_ENV=production
 WORKDIR /build
 COPY --from=base /base ./
 COPY . .
+ARG WISH_LIST_GIFTS_ENDPOINT
 RUN npm run build
 
 FROM node:current-alpine3.13 AS production
