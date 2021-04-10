@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { Image } from "react-bootstrap";
 import MyNavbar from "../components/navbar";
+import Footer from "../components/footer";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "../styles/Home.module.css";
@@ -29,16 +30,7 @@ export default function Home(): React.ReactNode {
           </p>
         </main>
 
-        <footer className={styles.footer}>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Powered by{" "}
-            <img alt="Vercel Logo" className={styles.logo} src="/vercel.svg" />
-          </a>
-        </footer>
+        <Footer />
       </div>
     </>
   );

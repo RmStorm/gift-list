@@ -7,7 +7,7 @@ import requests
 from fastapi import FastAPI, Depends
 from fastapi.security import OAuth2PasswordBearer
 
-from schemas import Gift, GiftCreate, GoogleToken
+from schemas import Gift, GiftCreate, GiftUpdate, GoogleToken
 
 GOOGLE_TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=YOUR_TOKEN_HERE"
 
@@ -72,17 +72,32 @@ async def root():
 async def gifts(conn=Depends(api_pool_manager.get_conn)):
     async with conn.transaction():
         all_gifts = await conn.fetch("SELECT * FROM gifts")
-    return [Gift(**gift) for gift in all_gifts]
+    return [Gift(**gift) for gift in sorted(all_gifts, key=lambda k: k['id'])]
+
+
+@app.post("/gifts")
+async def gifts(gift: GiftUpdate, conn=Depends(api_pool_manager.get_conn)):
+    logging.info(gift)
+    async with conn.transaction():
+        await conn.execute('''
+            UPDATE gifts
+            SET name = $2,
+                description = $3,
+                urls = $4,
+                image_url = $5,
+                desired_amount = $6,
+                modified_at = now()
+            WHERE id = $1;
+            ''', gift.id, gift.name, gift.description, gift.urls, gift.image_url, gift.desired_amount)
 
 
 @app.put("/gifts")
-async def gifts(gift_list: List[GiftCreate], conn=Depends(api_pool_manager.get_conn)):
-    for gift in gift_list:
-        logging.info(gift)
-        async with conn.transaction():
-            await conn.execute('''
-                INSERT INTO gifts(name, description, urls, image_url, desired_amount) VALUES($1, $2, $3, $4, $5)
-                ''', gift.name, gift.description, gift.urls, gift.image_url, gift.desired_amount)
+async def gifts(gift: GiftCreate, conn=Depends(api_pool_manager.get_conn)):
+    logging.info(gift)
+    async with conn.transaction():
+        await conn.execute('''
+            INSERT INTO gifts(name, description, urls, image_url, desired_amount) VALUES($1, $2, $3, $4, $5)
+            ''', gift.name, gift.description, gift.urls, gift.image_url, gift.desired_amount)
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):

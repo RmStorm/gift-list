@@ -32,9 +32,10 @@ function UserNavBarSnippet(): JSX.Element {
   );
 }
 
+const ALLOWED_EDIT_USERS = ["astridhult4@gmail.com", "roaldstorm@gmail.com"];
+
 export default function MyNavbar(): JSX.Element {
   const [session, loading] = useSession();
-
   return (
     <Navbar
       collapseOnSelect
@@ -50,7 +51,7 @@ export default function MyNavbar(): JSX.Element {
           <Nav className="mr-auto">
             <Nav.Link href="/location">Party location!</Nav.Link>
             <Nav.Link href="/wishlist">Wishlist</Nav.Link>
-            {session?.user.email === "astridhult4@gmail.com" ? (
+            {ALLOWED_EDIT_USERS.includes(session?.user.email) ? (
               <Nav.Link href="/astrids_master_list">
                 Astrids master list
               </Nav.Link>
@@ -64,3 +65,5 @@ export default function MyNavbar(): JSX.Element {
     </Navbar>
   );
 }
+
+export { ALLOWED_EDIT_USERS };

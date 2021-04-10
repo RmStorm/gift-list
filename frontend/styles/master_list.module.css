@@ -1,0 +1,5 @@
+
+/* .media { background: green; } */
+/* .media { background: rgb(250, 250, 250); } */
+.media:nth-child(even) { background: #f8f9fa; }
+.media{padding: 10px;}

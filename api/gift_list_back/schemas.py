@@ -1,7 +1,7 @@
 import datetime as dt
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 class GiftCreate(BaseModel):
@@ -11,9 +11,18 @@ class GiftCreate(BaseModel):
     urls: List[str]
     image_url: Optional[str]
 
+    @validator('name', pre=True)
+    def validate_name(cls, value):
+        if not value:
+            raise ValueError("empty name not allowed")
+        return value
 
-class Gift(GiftCreate):
+
+class GiftUpdate(GiftCreate):
     id: int
+
+
+class Gift(GiftUpdate):
     modified_at: dt.datetime
 
 
