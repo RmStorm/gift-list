@@ -1,5 +1,3 @@
-import Head from "next/head";
-
 import { useSession } from "next-auth/client";
 import Router from "next/router";
 import React, { useState } from "react";
@@ -60,6 +58,20 @@ const createGift = async (event, setFeedback) => {
   });
   if (res.status === 200) {
     setFeedback({ variant: "success", message: "New gift created!" });
+    mutate("/api/backend/gifts");
+    return;
+  }
+  setFeedback({ variant: "danger", message: await res.text() });
+};
+
+const deleteGift = async (_, setFeedback, originialGift: Gift) => {
+  const res = await fetch("/api/backend/gifts", {
+    body: JSON.stringify({ id: originialGift.id }),
+    headers: { "Content-Type": "application/json" },
+    method: "DELETE",
+  });
+  if (res.status === 200) {
+    setFeedback({ variant: "success", message: "Gift deleted!" });
     mutate("/api/backend/gifts");
     return;
   }
@@ -133,6 +145,12 @@ const EditForm = ({ onSubmit, gift }) => {
       <Button variant="primary" type="submit">
         {gift ? "Update" : "Create"}
       </Button>
+      <Button
+        variant="danger"
+        onClick={(e) => deleteGift(e, setFeedback, gift)}
+      >
+        Delete
+      </Button>
       {feedback.message ? (
         <Alert
           variant={feedback.variant}
@@ -151,7 +169,7 @@ const EditForm = ({ onSubmit, gift }) => {
   );
 };
 
-export default function AstridList() {
+export default function AstridList(): React.ReactNode {
   const [session, loading] = useSession();
   const { data, error } = useSWR("/api/backend/gifts", fetcher);
 
@@ -192,7 +210,6 @@ export default function AstridList() {
           </Media.Body>
         </Media>
       </Container>
-
       <Footer />
     </>
   );

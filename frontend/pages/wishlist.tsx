@@ -8,7 +8,8 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
-import { Gift } from "react-bootstrap-icons";
+import { Gift as GiftIcon } from "react-bootstrap-icons";
+import { Gift } from "../types";
 
 import MyNavbar from "../components/navbar";
 import Footer from "../components/footer";
@@ -27,20 +28,34 @@ export const getStaticProps: GetStaticProps = async () => {
     const res = await fetch(url);
     return {
       props: { giftList: await res.json() },
-      revalidate: 1,
+      revalidate: 5,
     };
   }
   return {
     props: { giftList: [] },
-    revalidate: 1,
+    revalidate: 5,
   };
 };
 
-export default function Gifts({ giftList }): React.ReactNode {
+type GiftsProps = {
+  giftList: Gift[];
+};
+
+const wishedAmountFooter = (gift: Gift, firstFetch: boolean) => {
+  return (
+    <Card.Footer className="text-muted">
+      <GiftIcon className="mr-2" />
+      {"wished: "}
+      {firstFetch ? <div className="spinner" /> : gift.desired_amount}
+    </Card.Footer>
+  );
+};
+
+export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
   const [firstFetch, setFirstFetch] = useState(true);
   // const [session, loading] = useSession();
-  const onSuccess = (data, key, config) => {
-    // When 'getStaticProps' data is used the number of available present should not be displayed
+  const onSuccess = () => {
+    // When 'getStaticProps' data is used the number of available present should not yet be displayed
     if (firstFetch) {
       setFirstFetch(false);
     }
@@ -71,7 +86,7 @@ export default function Gifts({ giftList }): React.ReactNode {
           {/* <code className={styles.code}>pages/index.js</code> */}
         </p>
         <Container>
-          <Row xs={1} sm={1} md={2} lg={3} xl={4}>
+          <Row xs={1} sm={1} md={2} lg={3} xl={3}>
             {data.map((gift) => {
               return (
                 <Col
@@ -83,15 +98,7 @@ export default function Gifts({ giftList }): React.ReactNode {
                     <Card.Body>
                       <Card.Title>{gift.name}</Card.Title>
                       <Card.Text>{gift.description}</Card.Text>
-                      <Card.Footer className="text-muted">
-                        <Gift className="mr-2" />
-                        wished:{" "}
-                        {firstFetch ? (
-                          <div className="spinner" />
-                        ) : (
-                            gift.desired_amount
-                          )}
-                      </Card.Footer>
+                      {wishedAmountFooter(gift, firstFetch)}
                     </Card.Body>
                   </Card>
                 </Col>

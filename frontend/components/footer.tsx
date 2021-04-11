@@ -1,6 +1,6 @@
 import styles from "../styles/Footer.module.css";
 
-export default function Footer() {
+export default function Footer(): React.ReactElement | null {
   return (
     <footer className={styles.footer}>
       <a

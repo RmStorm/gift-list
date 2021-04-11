@@ -1,9 +1,13 @@
 import urljoin from "url-join";
 import { getSession } from "next-auth/client";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const PUBLIC_ROUTES = ["gifts"];
 
-export default async (req, res) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
   const session = await getSession({ req });
 
   const host = `http://${process.env.GIFT_LIST_API_SERVICE_HOST}:${process.env.GIFT_LIST_API_SERVICE_PORT}/`;
@@ -17,10 +21,17 @@ export default async (req, res) => {
     // console.log(`hit api at '${apiPath}', with`, req);
     // console.log(`hit api at '${apiPath}', with`);
 
+    // Typescript does not allow passing the headers straight in,
+    // they have to be parsed to string[][]
+    const responseHeaders = req.rawHeaders.reduce(
+      (r, e, i) =>
+        i % 2 === 0 ? r.push([e]) && r : r[r.length - 1].push(e) && r,
+      []
+    );
     let fullUrl = urljoin(host, ...apiPath);
     const response = await fetch(fullUrl, {
       method: req.method,
-      headers: req.headers,
+      headers: responseHeaders,
       ...(req.method !== "GET" && { body: JSON.stringify({ ...req.body }) }),
     });
 

@@ -1,20 +1,13 @@
 import os
 import logging
-from typing import List
 
 import asyncpg
-import requests
 from fastapi import FastAPI, Depends
-from fastapi.security import OAuth2PasswordBearer
 
-from schemas import Gift, GiftCreate, GiftUpdate, GoogleToken
-
-GOOGLE_TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=YOUR_TOKEN_HERE"
+from schemas import Gift, GiftCreate, GiftUpdate, GiftDelete
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI(docs_url="/", title="GIFT LIST API", version="v1")
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 class ApiPoolManager:
@@ -67,10 +60,6 @@ async def shutdown_event():
 async def root():
     return {"message": "Hello World"}
 
-@app.get("/test")
-async def root():
-    return {"message": "Hello World"}
-
 
 @app.get("/gifts")
 async def gifts(conn=Depends(api_pool_manager.get_conn)):
@@ -104,12 +93,7 @@ async def gifts(gift: GiftCreate, conn=Depends(api_pool_manager.get_conn)):
             ''', gift.name, gift.description, gift.urls, gift.image_url, gift.desired_amount)
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    r = requests.get(GOOGLE_TOKEN_INFO_URL, params={'id_token': token})
-    return GoogleToken.parse_obj(r.json())
-
-
-@app.post('/auth')
-async def auth(current_user: GoogleToken = Depends(get_current_user)):
-    logging.info(current_user)
-    return {"data": "here some data fo ya!", "user": current_user}
+@app.delete("/gifts")
+async def gifts(gift: GiftDelete, conn=Depends(api_pool_manager.get_conn)):
+    async with conn.transaction():
+        await conn.execute("DELETE FROM gifts WHERE id = $1", gift.id)

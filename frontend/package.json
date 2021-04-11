@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "eval $(egrep -hv '^#' ./config/localdev.env ../secrets/google_oauth.env ../secrets/postgres_credentials.env | xargs) next dev -p 8500",
+    "debug": "eval $(egrep -hv '^#' ./config/localdev.env ../secrets/google_oauth.env ../secrets/postgres_credentials.env | xargs) NODE_OPTIONS='--inspect' next dev -p 8500",
     "build": "next build",
     "start": "next start",
     "lint": "eslint ./"

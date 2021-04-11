@@ -4,6 +4,10 @@ from typing import List, Optional
 from pydantic import BaseModel, validator
 
 
+class GiftDelete(BaseModel):
+    id: int
+
+
 class GiftCreate(BaseModel):
     name: str
     description: Optional[str] = None
@@ -18,8 +22,8 @@ class GiftCreate(BaseModel):
         return value
 
 
-class GiftUpdate(GiftCreate):
-    id: int
+class GiftUpdate(GiftCreate, GiftDelete):
+    pass
 
 
 class Gift(GiftUpdate):
