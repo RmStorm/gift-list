@@ -135,7 +135,7 @@ const EditForm = ({ onSubmit, gift }) => {
 
       <Form.Group as={Row} controlId="numberWished">
         <Form.Label column sm={2}>
-          Desired
+          Desired amount
         </Form.Label>
         <Col sm={10}>
           <Form.Control defaultValue={gift?.desired_amount} size="sm" />
@@ -145,12 +145,14 @@ const EditForm = ({ onSubmit, gift }) => {
       <Button variant="primary" type="submit">
         {gift ? "Update" : "Create"}
       </Button>
-      <Button
-        variant="danger"
-        onClick={(e) => deleteGift(e, setFeedback, gift)}
-      >
-        Delete
-      </Button>
+      {gift && (
+        <Button
+          variant="danger"
+          onClick={(e) => deleteGift(e, setFeedback, gift)}
+        >
+          Delete
+        </Button>
+      )}
       {feedback.message ? (
         <Alert
           variant={feedback.variant}
@@ -172,6 +174,17 @@ const EditForm = ({ onSubmit, gift }) => {
 export default function AstridList(): React.ReactNode {
   const [session, loading] = useSession();
   const { data, error } = useSWR("/api/backend/gifts", fetcher);
+
+  // The 'new gift form' consist of uncontrolled fields, this basically means that
+  // their values are persisted accross re-renders. A clever little idiotic thing
+  // I came up with is to simply key that form with an integer. Everytime a new gift
+  // is created I increment the key which creates a fresh object and deletes the values..
+  // Since all the callbacks have the same form I had to splice the increment call in here.
+  const [newGiftCount, setNewGiftCount] = useState(0);
+  const curriedGiftCreater = (event, setFeedback) => {
+    setNewGiftCount(newGiftCount + 1); // increment gift count to empty bottom form
+    createGift(event, setFeedback);
+  };
 
   if (!data || loading) return <div>loading...</div>;
   if (!ALLOWED_EDIT_USERS.includes(session?.user.email)) {
@@ -203,10 +216,10 @@ export default function AstridList(): React.ReactNode {
             </Media>
           );
         })}
-        <Media className={styles.media}>
+        <Media className={styles.media} key={newGiftCount}>
           <Media.Body>
             <h3>Add a new present</h3>
-            <EditForm onSubmit={createGift} gift={undefined} />
+            <EditForm onSubmit={curriedGiftCreater} gift={undefined} />
           </Media.Body>
         </Media>
       </Container>
