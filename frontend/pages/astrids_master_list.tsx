@@ -10,6 +10,14 @@ import {
   Row,
   Alert,
 } from "react-bootstrap";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSortUp,
+  faSortDown,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+
 import useSWR, { mutate } from "swr";
 
 import styles from "../styles/master_list.module.css";
@@ -22,9 +30,29 @@ import Header from "../components/header";
 const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args).then((res) => res.json());
 
+const swapGifts = async (event, newPosition, oldPosition) => {
+  event.preventDefault();
+
+  const res = await fetch("/api/backend/swap_gifts", {
+    body: JSON.stringify({ newPosition, oldPosition }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  });
+  if (res.status === 200) {
+    // setFeedback({ variant: "success", message: "New gift created!" });
+    mutate("/api/backend/gifts");
+    return true;
+  }
+  // setFeedback({ variant: "danger", message: await res.text() });
+  return false;
+};
+
 const formatGift = (event, originialGift?: Gift) => {
   return {
-    ...(originialGift && { id: originialGift.id }),
+    ...(originialGift && {
+      id: originialGift.id,
+      gift_order: originialGift.gift_order,
+    }),
     name: event.target.name.value,
     description: event.target.description.value,
     urls: event.target.productLinks.value.split("\n"),
@@ -48,9 +76,10 @@ const updateGift = async (event, setFeedback, originialGift: Gift) => {
   setFeedback({ variant: "danger", message: await res.text() });
 };
 
-const createGift = async (event, setFeedback) => {
+const createGift = async (event, setFeedback, giftOrder) => {
   event.preventDefault();
-  const newGift: Gift = formatGift(event);
+  const newGift: Gift = { ...formatGift(event), gift_order: giftOrder };
+
   const res = await fetch("/api/backend/gifts", {
     body: JSON.stringify(newGift),
     headers: { "Content-Type": "application/json" },
@@ -59,9 +88,10 @@ const createGift = async (event, setFeedback) => {
   if (res.status === 200) {
     setFeedback({ variant: "success", message: "New gift created!" });
     mutate("/api/backend/gifts");
-    return;
+    return true;
   }
   setFeedback({ variant: "danger", message: await res.text() });
+  return false;
 };
 
 const deleteGift = async (_, setFeedback, originialGift: Gift) => {
@@ -78,7 +108,12 @@ const deleteGift = async (_, setFeedback, originialGift: Gift) => {
   setFeedback({ variant: "danger", message: await res.text() });
 };
 
-const EditForm = ({ onSubmit, gift }) => {
+const EditForm = ({
+  onSubmit,
+  gift,
+  giftBefore = undefined,
+  giftAfter = undefined,
+}) => {
   const [feedback, setFeedback] = useState({ variant: "danger", message: "" });
 
   const curriedOnSubmit = (event) => {
@@ -141,18 +176,38 @@ const EditForm = ({ onSubmit, gift }) => {
           <Form.Control defaultValue={gift?.desired_amount} size="sm" />
         </Col>
       </Form.Group>
-
-      <Button variant="primary" type="submit">
-        {gift ? "Update" : "Create"}
-      </Button>
-      {gift && (
-        <Button
-          variant="danger"
-          onClick={(e) => deleteGift(e, setFeedback, gift)}
-        >
-          Delete
+      <>
+        <Button variant="primary" type="submit">
+          {gift ? "Update" : "Create"}
         </Button>
-      )}
+        {gift && (
+          <>
+            {" "}
+            <Button
+              variant="danger"
+              onClick={(e) => deleteGift(e, setFeedback, gift)}
+            >
+              Delete <FontAwesomeIcon icon={faTrash} />
+            </Button>{" "}
+            {giftBefore && (
+              <Button
+                variant="info"
+                onClick={(e) => swapGifts(e, giftBefore, gift.gift_order)}
+              >
+                <FontAwesomeIcon icon={faSortUp} />
+              </Button>
+            )}{" "}
+            {giftAfter && (
+              <Button
+                variant="info"
+                onClick={(e) => swapGifts(e, giftAfter, gift.gift_order)}
+              >
+                <FontAwesomeIcon icon={faSortDown} />
+              </Button>
+            )}
+          </>
+        )}
+      </>
       {feedback.message ? (
         <Alert
           variant={feedback.variant}
@@ -171,6 +226,48 @@ const EditForm = ({ onSubmit, gift }) => {
   );
 };
 
+const renderGift = (gift: Gift, giftBefore?: number, giftAfter?: number) => {
+  return (
+    <Media key={gift.name} className={styles.media}>
+      <img
+        width={128}
+        height={128}
+        className="mr-3"
+        src={gift.image_url}
+        alt="You need to add a link to a nice pic!"
+      />
+      <Media.Body>
+        <EditForm
+          onSubmit={updateGift}
+          gift={gift}
+          giftBefore={giftBefore}
+          giftAfter={giftAfter}
+        />
+      </Media.Body>
+    </Media>
+  );
+};
+
+const renderAllGift = (gifts) => {
+  const { length } = gifts;
+  const result = new Array(length);
+  result[0] = renderGift(gifts[0], undefined, gifts[1].gift_order);
+  for (let i = 1; i < length - 1; i += 1) {
+    result[i] = renderGift(
+      gifts[i],
+      gifts[i - 1].gift_order,
+      gifts[i + 1].gift_order
+    );
+  }
+  result[length - 1] = renderGift(
+    gifts[length - 1],
+    gifts[length - 2].gift_order,
+    undefined
+  );
+
+  return result;
+};
+
 export default function AstridList(): React.ReactNode {
   const [session, loading] = useSession();
   const { data, error } = useSWR("/api/backend/gifts", fetcher);
@@ -181,10 +278,6 @@ export default function AstridList(): React.ReactNode {
   // is created I increment the key which creates a fresh object and deletes the values..
   // Since all the callbacks have the same form I had to splice the increment call in here.
   const [newGiftCount, setNewGiftCount] = useState(0);
-  const curriedGiftCreater = (event, setFeedback) => {
-    setNewGiftCount(newGiftCount + 1); // increment gift count to empty bottom form
-    createGift(event, setFeedback);
-  };
 
   if (!data || loading) return <div>loading...</div>;
   if (!ALLOWED_EDIT_USERS.includes(session?.user.email)) {
@@ -195,27 +288,23 @@ export default function AstridList(): React.ReactNode {
   }
   if (error) return <div>failed to load</div>;
 
+  const curriedGiftCreater = async (event, setFeedback) => {
+    const successfullSubmit = await createGift(
+      event,
+      setFeedback,
+      data.length + 1
+    );
+    if (successfullSubmit) {
+      setNewGiftCount(newGiftCount + 1); // increment gift count to empty bottom form after submit
+    }
+  };
+
   return (
     <>
       <MyNavbar />
       <Header />
       <Container>
-        {data.map((gift) => {
-          return (
-            <Media key={gift.name} className={styles.media}>
-              <img
-                width={128}
-                height={128}
-                className="mr-3"
-                src={gift.image_url}
-                alt="You need to add a link to a nice pic!"
-              />
-              <Media.Body>
-                <EditForm onSubmit={updateGift} gift={gift} />
-              </Media.Body>
-            </Media>
-          );
-        })}
+        {renderAllGift(data)}
         <Media className={styles.media} key={newGiftCount}>
           <Media.Body>
             <h3>Add a new present</h3>

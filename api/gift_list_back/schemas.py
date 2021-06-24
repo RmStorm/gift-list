@@ -8,12 +8,18 @@ class GiftDelete(BaseModel):
     id: int
 
 
+class GiftSwap(BaseModel):
+    newPosition: int
+    oldPosition: int
+
+
 class GiftCreate(BaseModel):
     name: str
     description: Optional[str] = None
     desired_amount: int
     urls: List[str]
     image_url: Optional[str]
+    gift_order: int
 
     @validator('name', pre=True)
     def validate_name(cls, value):

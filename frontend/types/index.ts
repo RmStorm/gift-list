@@ -1,5 +1,6 @@
 export type Gift = {
   id?: number;
+  gift_order: number;
   name: string;
   description: string;
   desired_amount: number;

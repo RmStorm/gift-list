@@ -35,7 +35,7 @@ export default async (
       ...(req.method !== "GET" && { body: JSON.stringify({ ...req.body }) }),
     });
 
-    res.status(response.status).json(await response.json());
+    res.status(response.status).send(await response.text());
   } else {
     // Not Signed in
     res.status(401).send("Unauthorized");

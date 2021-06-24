@@ -4,7 +4,7 @@ import logging
 import asyncpg
 from fastapi import FastAPI, Depends
 
-from schemas import Gift, GiftCreate, GiftUpdate, GiftDelete
+from schemas import Gift, GiftCreate, GiftUpdate, GiftDelete, GiftSwap
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI(docs_url="/", title="GIFT LIST API", version="v1")
@@ -65,7 +65,16 @@ async def root():
 async def gifts(conn=Depends(api_pool_manager.get_conn)):
     async with conn.transaction():
         all_gifts = await conn.fetch("SELECT * FROM gifts")
-    return [Gift(**gift) for gift in sorted(all_gifts, key=lambda k: k['id'])]
+    return [Gift(**gift) for gift in sorted(all_gifts, key=lambda k: k['gift_order'])]
+
+
+@app.post("/swap_gifts")
+async def swap_gifts(gift_swap: GiftSwap, conn=Depends(api_pool_manager.get_conn)):
+    logging.info(gift_swap)
+    async with conn.transaction():
+        await conn.execute('''
+            update gifts set gift_order = (case gift_order when $1 then $2 when $2 then $1 else gift_order end);
+            ''', gift_swap.newPosition, gift_swap.oldPosition)
 
 
 @app.post("/gifts")
@@ -79,9 +88,10 @@ async def gifts(gift: GiftUpdate, conn=Depends(api_pool_manager.get_conn)):
                 urls = $4,
                 image_url = $5,
                 desired_amount = $6,
+                gift_order = $7,
                 modified_at = now()
             WHERE id = $1;
-            ''', gift.id, gift.name, gift.description, gift.urls, gift.image_url, gift.desired_amount)
+            ''', gift.id, gift.name, gift.description, gift.urls, gift.image_url, gift.desired_amount, gift.gift_order)
 
 
 @app.put("/gifts")
@@ -89,8 +99,9 @@ async def gifts(gift: GiftCreate, conn=Depends(api_pool_manager.get_conn)):
     logging.info(gift)
     async with conn.transaction():
         await conn.execute('''
-            INSERT INTO gifts(name, description, urls, image_url, desired_amount) VALUES($1, $2, $3, $4, $5)
-            ''', gift.name, gift.description, gift.urls, gift.image_url, gift.desired_amount)
+            INSERT INTO gifts(name, description, urls, image_url, desired_amount, gift_order) 
+            VALUES($1, $2, $3, $4, $5, $6)
+            ''', gift.name, gift.description, gift.urls, gift.image_url, gift.desired_amount, gift.gift_order)
 
 
 @app.delete("/gifts")
