@@ -1,23 +1,17 @@
 import { useSession, signIn, signOut } from "next-auth/client";
-import {
-  Navbar,
-  Nav,
-  NavDropdown,
-  Button,
-  Form,
-  FormControl,
-  Container,
-} from "react-bootstrap";
+import { Navbar, Nav, Button, Container } from "react-bootstrap";
+
+import styles from "../styles/Navbar.module.css";
 
 function UserNavBarSnippet(): JSX.Element {
-  const [session, loading] = useSession();
+  const [session] = useSession();
   if (session) {
     return (
       <>
         <Navbar.Text className="mr-sm-2">
           Signed in as {session.user.email}
         </Navbar.Text>
-        <Button variant="outline-primary" onClick={() => signOut()}>
+        <Button variant="outline-secondary" onClick={() => signOut()}>
           Sign out
         </Button>
       </>
@@ -25,7 +19,7 @@ function UserNavBarSnippet(): JSX.Element {
   }
   return (
     <>
-      <Button variant="outline-primary" onClick={() => signIn()}>
+      <Button variant="outline-secondary" onClick={() => signIn()}>
         Sign in
       </Button>
     </>
@@ -43,12 +37,14 @@ export default function MyNavbar(): JSX.Element {
       expand="lg"
       bg="light"
       variant="light"
+      className={styles.navbar}
     >
       <Container>
         <Navbar.Brand href="/">Home</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
+            <Nav.Link href="/info">Practical information</Nav.Link>
             <Nav.Link href="/location">Party location!</Nav.Link>
             <Nav.Link href="/wishlist">Wishlist</Nav.Link>
             {ALLOWED_EDIT_USERS.includes(session?.user.email) ? (

@@ -15,7 +15,7 @@ import MyNavbar from "../components/navbar";
 import Footer from "../components/footer";
 import Header from "../components/header";
 
-import styles from "../styles/Home.module.css";
+import styles from "../styles/Home.module.scss";
 
 const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args).then((res) => res.json());
@@ -52,8 +52,8 @@ const wishedAmountFooter = (gift: Gift, firstFetch: boolean) => {
 };
 
 export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
+  const [session, loading] = useSession();
   const [firstFetch, setFirstFetch] = useState(true);
-  // const [session, loading] = useSession();
   const onSuccess = () => {
     // When 'getStaticProps' data is used the number of available present should not yet be displayed
     if (firstFetch) {
@@ -68,32 +68,41 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
     onSuccess,
   });
 
+  if (!data || loading) return <div>loading...</div>;
+
   if (error) return <div>failed to load</div>;
 
   return (
     <>
-      <MyNavbar />
       <div className={styles.container}>
+        <MyNavbar />
         <Header />
 
-        <h1 className={styles.title}>Gifts</h1>
-        <Button href="/location">To Location</Button>
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <Link href="/location">
-            <a>location</a>
-          </Link>
-          {/* <code className={styles.code}>pages/index.js</code> */}
-        </p>
+        <h1 className={styles.title}>Wishlist</h1>
+        {/* <Button href="/location">To Location</Button> */}
         <Container>
+          <p className={styles.description}>
+            Here is a list of presents that we would like. it's a lot of cutlery
+            and some other house stuff! There is also a couple suggestions if
+            you would like to sponsor an activity on our honeymoon such as
+            diving! If you came up with a great gift yourself feel free to just
+            completely ignore this list.
+          </p>
+          <p className={styles.description}>
+            {"If you would like to give a present from this list, "}
+            {session
+              ? "click the 'claim' button on one of the gifts to let others know they shouldn't buy it!"
+              : "please log in to claim it so gifts are not given multiple times!"}
+            {/* <Link href="/location">
+              <a>location</a>
+            </Link> */}
+            {/* <code className={styles.code}>pages/index.js</code> */}
+          </p>
           <Row xs={1} sm={1} md={2} lg={3} xl={3}>
             {data.map((gift) => {
               return (
-                <Col
-                  key={gift.name}
-                  className="align-items-stretch d-flex py-2"
-                >
-                  <Card border="default">
+                <Col key={gift.name} className="d-flex py-2">
+                  <Card border="default" className={styles.cardFullWidth}>
                     <Card.Img variant="top" src={gift.image_url} />
                     <Card.Body>
                       <Card.Title>{gift.name}</Card.Title>

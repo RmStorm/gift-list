@@ -5,10 +5,27 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  z-index: 1;
+}
+
+.container_background {
+  @extend .container
+}
+
+.container_background::before {
+  content: "";
+  position: absolute;
+  top: 0; 
+  left: -50%;
+  width: 150%; 
+  height: 107%;  
+  opacity: .015; 
+  z-index: -1;
+  background: url(../public/flower.png);
 }
 
 .main {
-  padding: 5rem 0;
+  padding: 2rem 0;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -31,6 +48,7 @@
   margin: 0;
   line-height: 1.15;
   font-size: 4rem;
+  font-family: “Playfair Display”, “Didot”, "Times New Roman", Times, serif;
 }
 
 .title,
@@ -40,7 +58,7 @@
 
 .description {
   line-height: 1.5;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 
 .code {
@@ -50,4 +68,8 @@
   font-size: 1.1rem;
   font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
     Bitstream Vera Sans Mono, Courier New, monospace;
+}
+
+.cardFullWidth{
+  flex-grow: 1
 }

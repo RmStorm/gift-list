@@ -4,15 +4,15 @@ import MyNavbar from "../components/navbar";
 import Footer from "../components/footer";
 import Header from "../components/header";
 
-import styles from "../styles/Home.module.css";
+import styles from "../styles/Home.module.scss";
 
 function Location(): React.ReactNode {
   const Map = dynamic(() => import("../components/map"), { ssr: false });
 
   return (
     <>
-      <MyNavbar />
       <div className={styles.container}>
+        <MyNavbar />
         <Header>
           <link
             rel="stylesheet"
@@ -21,12 +21,15 @@ function Location(): React.ReactNode {
             crossOrigin=""
           />
         </Header>
-        <h1>Location</h1>{" "}
-        <h2>
-          <Link href="/">
-            <a>Back to frontpage</a>
-          </Link>
-        </h2>
+        <main className={styles.main}>
+          <h1>Location</h1>{" "}
+          <h2>
+            <Link href="/">
+              <a>Back to frontpage</a>
+            </Link>
+          </h2>
+        </main>
+
         <Map />
         <Footer />
       </div>
