@@ -2,7 +2,13 @@ import urljoin from "url-join";
 import { getSession } from "next-auth/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
-const PUBLIC_ROUTES = ["gifts"];
+const PUBLIC_ROUTES = [
+  { path: "gifts", method: "GET" },
+  { path: "allergy", method: "PUT" },
+];
+
+const compareRoute = (apiPath: string, method: string) => (route) =>
+  route.path === apiPath && route.method === method;
 
 export default async (
   req: NextApiRequest,
@@ -16,11 +22,7 @@ export default async (
   } = req;
 
   // apiPath is an array of / seperated url parts
-  if (session || (PUBLIC_ROUTES.includes(apiPath[0]) && req.method === "GET")) {
-    // console.log("Session", JSON.stringify(session, null, 2));
-    // console.log(`hit api at '${apiPath}', with`, req);
-    // console.log(`hit api at '${apiPath}', with`);
-
+  if (session || PUBLIC_ROUTES.some(compareRoute(apiPath[0], req.method))) {
     // Typescript does not allow passing the headers straight in,
     // they have to be parsed to string[][]
     const responseHeaders = req.rawHeaders.reduce(

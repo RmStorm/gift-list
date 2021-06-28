@@ -1,6 +1,7 @@
 import Container from "react-bootstrap/Container";
-import { useSession } from "next-auth/client";
-import React from "react";
+import { useSession, signIn } from "next-auth/client";
+import { Form, Button, Alert } from "react-bootstrap";
+import React, { useState } from "react";
 import MyNavbar from "../components/navbar";
 import Footer from "../components/footer";
 import Header from "../components/header";
@@ -15,6 +16,70 @@ const renderPair = ({ k, v }) => (
     <div className="p-1 user-select-all">{v}</div>
   </div>
 );
+
+const askFoodLogin = () => (
+  <p>
+    <strong>
+      {" "}
+      <a onClick={() => signIn()} href="#food" className="link-primary">
+        Sign in
+      </a>{" "}
+      to fill out the allergy box!
+    </strong>
+  </p>
+);
+
+const submitFoodPreference = (session, setFeedback) => async (event) => {
+  event.preventDefault();
+  const res = await fetch("/api/backend/allergy", {
+    body: JSON.stringify({
+      user_email: session.user.email,
+      food_preference: event.target[0].value,
+    }),
+    headers: { "Content-Type": "application/json" },
+    method: "PUT",
+  });
+  if (res.status === 200) {
+    setFeedback({ variant: "success", message: "Updated your food prefences" });
+    return true;
+  }
+  setFeedback({ variant: "danger", message: await res.text() });
+  return false;
+};
+
+const ShowFoodBox = ({ session }) => {
+  const [feedback, setFeedback] = useState({ variant: "danger", message: "" });
+  return (
+    <Form onSubmit={submitFoodPreference(session, setFeedback)}>
+      <Form.Group controlId="description">
+        <Form.Control
+          as="textarea"
+          rows={5}
+          defaultValue={session.user.foodPreference}
+          size="sm"
+        />
+      </Form.Group>
+      <Button variant="primary" type="submit" className="m-2">
+        Send food preference
+      </Button>
+      {feedback.message ? (
+        <Alert
+          className="m-2"
+          variant={feedback.variant}
+          onClose={() => setFeedback({ variant: "danger", message: "" })}
+          dismissible
+        >
+          <Alert.Heading>
+            {feedback.variant === "success"
+              ? "success"
+              : "Oh snap! You got an error!"}
+          </Alert.Heading>
+          <p>{feedback.message}</p>
+        </Alert>
+      ) : undefined}
+    </Form>
+  );
+};
 
 export default function Info(): React.ReactNode {
   const [session] = useSession();
@@ -81,6 +146,7 @@ export default function Info(): React.ReactNode {
               drinks, please {!session && "sign in and"} leave a comment in the
               box below.
             </p>
+            {session ? <ShowFoodBox session={session} /> : askFoodLogin()}
           </Container>
         </main>
         <Footer />
