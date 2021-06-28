@@ -120,8 +120,6 @@ async def put_allergy(allergy: AllergyPut, conn=Depends(api_pool_manager.get_con
                 updated_at = now()
             WHERE email = $1;
             ''', allergy.user_email, allergy.food_preference)
-        logging.info(new_user_row)
         if new_user_row == 'UPDATE 0':
-            logging.info('nothitted')
             raise HTTPException(status_code=404, detail="Item not found")
-        logging.info(new_user_row)
+        logging.info('Successfully updated user')
