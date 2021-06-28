@@ -2,9 +2,9 @@ import os
 import logging
 
 import asyncpg
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 
-from schemas import Gift, GiftCreate, GiftUpdate, GiftDelete, GiftSwap
+from schemas import Gift, GiftCreate, GiftUpdate, GiftDelete, GiftSwap, AllergyPut
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI(docs_url="/", title="GIFT LIST API", version="v1")
@@ -62,7 +62,7 @@ async def root():
 
 
 @app.get("/gifts")
-async def gifts(conn=Depends(api_pool_manager.get_conn)):
+async def get_gifts(conn=Depends(api_pool_manager.get_conn)):
     async with conn.transaction():
         all_gifts = await conn.fetch("SELECT * FROM gifts")
     return [Gift(**gift) for gift in sorted(all_gifts, key=lambda k: k['gift_order'])]
@@ -78,7 +78,7 @@ async def swap_gifts(gift_swap: GiftSwap, conn=Depends(api_pool_manager.get_conn
 
 
 @app.post("/gifts")
-async def gifts(gift: GiftUpdate, conn=Depends(api_pool_manager.get_conn)):
+async def post_gifts(gift: GiftUpdate, conn=Depends(api_pool_manager.get_conn)):
     logging.info(gift)
     async with conn.transaction():
         await conn.execute('''
@@ -95,7 +95,7 @@ async def gifts(gift: GiftUpdate, conn=Depends(api_pool_manager.get_conn)):
 
 
 @app.put("/gifts")
-async def gifts(gift: GiftCreate, conn=Depends(api_pool_manager.get_conn)):
+async def put_gifts(gift: GiftCreate, conn=Depends(api_pool_manager.get_conn)):
     logging.info(gift)
     async with conn.transaction():
         await conn.execute('''
@@ -105,6 +105,23 @@ async def gifts(gift: GiftCreate, conn=Depends(api_pool_manager.get_conn)):
 
 
 @app.delete("/gifts")
-async def gifts(gift: GiftDelete, conn=Depends(api_pool_manager.get_conn)):
+async def delete_gifts(gift: GiftDelete, conn=Depends(api_pool_manager.get_conn)):
     async with conn.transaction():
         await conn.execute("DELETE FROM gifts WHERE id = $1", gift.id)
+
+
+@app.put("/allergy")
+async def put_allergy(allergy: AllergyPut, conn=Depends(api_pool_manager.get_conn)):
+    logging.info(allergy)
+    async with conn.transaction():
+        new_user_row = await conn.execute('''
+            UPDATE users
+            SET food_preference = $2,
+                updated_at = now()
+            WHERE email = $1;
+            ''', allergy.user_email, allergy.food_preference)
+        logging.info(new_user_row)
+        if new_user_row == 'UPDATE 0':
+            logging.info('nothitted')
+            raise HTTPException(status_code=404, detail="Item not found")
+        logging.info(new_user_row)

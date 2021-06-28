@@ -36,6 +36,10 @@ class Gift(GiftUpdate):
     modified_at: dt.datetime
 
 
+class AllergyPut(BaseModel):
+    user_email: str
+    food_preference: str
+
 class GoogleToken(BaseModel):
     iss: str
     azp: str
