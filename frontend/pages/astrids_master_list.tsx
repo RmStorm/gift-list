@@ -287,13 +287,15 @@ export default function AstridList(): React.ReactNode {
     return <div>You're not allowed!!! Ya punchy bastard!!!!</div>;
   }
   if (error) return <div>failed to load</div>;
+  const reducer = (acc: number, gift: Gift) => Math.max(acc, gift.gift_order);
 
   const curriedGiftCreater = async (event, setFeedback) => {
     const successfullSubmit = await createGift(
       event,
       setFeedback,
-      data.length + 1
+      data.reduce(reducer, 0) + 1
     );
+
     if (successfullSubmit) {
       setNewGiftCount(newGiftCount + 1); // increment gift count to empty bottom form after submit
     }
