@@ -23,7 +23,7 @@ export default async (
 
   // apiPath is an array of / seperated url parts, the 0th part is the path I care about for now
   if (session || PUBLIC_ROUTES.some(compareRoute(apiPath[0], req.method))) {
-    if (req.body?.user_email !== session.user.email) {
+    if (req.body?.user_email && req.body.user_email !== session.user.email) {
       // Not allowed to change other users
       res.status(401).send("Unauthorized");
     } else {

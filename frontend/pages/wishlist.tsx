@@ -80,11 +80,12 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
         <h1 className={styles.title}>Wishlist</h1>
         <Container>
           <p className={styles.description}>
-            Here is a list of presents that we would like. it's a lot of cutlery
-            and some other house stuff! There is also a couple suggestions if
-            you would like to sponsor an activity on our honeymoon such as
-            diving! If you came up with a great gift yourself feel free to just
-            completely ignore this list.
+            If you would like to bring a present to the party, we would greatly
+            appreciate a contribution to our little household, or to the
+            honeymoon we have planned in Sicily. We plan on going diving,
+            sightseeing and eating lots of gelato. We have made a list of
+            wishes, but if you have come up with a great idea that is not
+            mentioned here, feel free to completely ignore this list.
           </p>
           <p className={styles.description}>
             {"If you would like to give a present from this list, "}
