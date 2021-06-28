@@ -27,7 +27,7 @@ export default NextAuth({
     // Passwordless / email sign in
     Providers.Email({
       server: {
-        service: "gmail", // no need to set host or port etc.
+        service: "gmail", // no need to set host or port etc. gmail is known
         auth: {
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PASS,

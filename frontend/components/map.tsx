@@ -1,8 +1,7 @@
 import { LatLngTuple, icon } from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-// import "leaflet/dist/leaflet.css";
 
-const makeLink = (location, text) => {
+const makeLink = (location: string, text: string) => {
   return (
     <a target="_blank" rel="noopener noreferrer" href={location}>
       {text}

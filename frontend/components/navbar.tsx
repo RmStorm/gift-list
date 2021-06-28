@@ -29,7 +29,7 @@ function UserNavBarSnippet(): JSX.Element {
 const ALLOWED_EDIT_USERS = ["astridhult4@gmail.com", "roaldstorm@gmail.com"];
 
 export default function MyNavbar(): JSX.Element {
-  const [session, loading] = useSession();
+  const [session] = useSession();
   return (
     <Navbar
       collapseOnSelect

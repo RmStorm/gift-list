@@ -62,7 +62,7 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
 
   const { data, error } = useSWR("/api/backend/gifts", fetcher, {
     revalidateOnMount: true,
-    // refreshInterval: 2,
+    refreshInterval: 5,
     initialData: giftList,
     onSuccess,
   });
@@ -78,7 +78,6 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
         <Header />
 
         <h1 className={styles.title}>Wishlist</h1>
-        {/* <Button href="/location">To Location</Button> */}
         <Container>
           <p className={styles.description}>
             Here is a list of presents that we would like. it's a lot of cutlery
@@ -92,10 +91,6 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
             {session
               ? "click the 'claim' button on one of the gifts to let others know they shouldn't buy it!"
               : "please log in to claim it so gifts are not given multiple times!"}
-            {/* <Link href="/location">
-              <a>location</a>
-            </Link> */}
-            {/* <code className={styles.code}>pages/index.js</code> */}
           </p>
           <Row xs={1} sm={1} md={2} lg={3} xl={3}>
             {data.map((gift) => {
