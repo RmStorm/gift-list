@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { GetStaticProps } from "next";
 import useSWR from "swr";
 import { useSession } from "next-auth/client";
 import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
+
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";

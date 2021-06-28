@@ -14,9 +14,18 @@ export default function Home(): React.ReactNode {
         <MyNavbar />
         <Header />
         <main className={styles.main}>
-          <h1 className={styles.title}>Astrid & Roald are getting married!</h1>
-          <Image src="/astrid_roald.jpeg" fluid rounded />
-          <p className={styles.description}>
+          <Image
+            className="order-0 order-sm-2"
+            src="/astrid_roald.jpeg"
+            fluid
+            rounded
+          />
+
+          <h1 className={`${styles.title} order-1`}>
+            Astrid & Roald are getting married!
+          </h1>
+
+          <p className={`${styles.description} order-3`}>
             There will be a little more story here later on! Probably also some
             planning stuff!! Possible even pictures of the{" "}
             <Link href="/venue">
