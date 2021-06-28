@@ -71,6 +71,7 @@ const updateGift = async (event, setFeedback, originialGift: Gift) => {
   });
   if (res.status === 200) {
     setFeedback({ variant: "success", message: "Gift is updated" });
+    mutate("/api/backend/gifts");
     return;
   }
   setFeedback({ variant: "danger", message: await res.text() });
