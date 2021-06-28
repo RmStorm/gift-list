@@ -19,8 +19,8 @@ export default function Home(): React.ReactNode {
           <p className={styles.description}>
             There will be a little more story here later on! Probably also some
             planning stuff!! Possible even pictures of the{" "}
-            <Link href="/location">
-              <a>location</a>
+            <Link href="/venue">
+              <a>venue</a>
             </Link>
             .
           </p>

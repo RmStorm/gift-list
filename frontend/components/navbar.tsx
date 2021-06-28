@@ -45,7 +45,7 @@ export default function MyNavbar(): JSX.Element {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             <Nav.Link href="/info">Practical information</Nav.Link>
-            <Nav.Link href="/location">Party location!</Nav.Link>
+            <Nav.Link href="/venue">Venue</Nav.Link>
             <Nav.Link href="/wishlist">Wishlist</Nav.Link>
             {ALLOWED_EDIT_USERS.includes(session?.user.email) ? (
               <Nav.Link href="/astrids_master_list">
