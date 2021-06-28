@@ -23,6 +23,11 @@ export default async (
 
   // apiPath is an array of / seperated url parts
   if (session || PUBLIC_ROUTES.some(compareRoute(apiPath[0], req.method))) {
+    if (req.body?.user_email) {
+      if (req.body.user_email !== session.user.email) {
+        res.status(401).send("Unauthorized");
+      }
+    }
     // Typescript does not allow passing the headers straight in,
     // they have to be parsed to string[][]
     const responseHeaders = req.rawHeaders.reduce(
