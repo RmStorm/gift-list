@@ -106,37 +106,32 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
                     <Card.Body>
                       <Card.Title>{gift.name}</Card.Title>
                       <Card.Text>{gift.description}</Card.Text>
+                      <ul className="list-group list-group-flush">
+                        {gift.urls.map((link: string, i: number) => {
+                          let url;
+                          try {
+                            url = new URL(link);
+                          } catch (err) {
+                            return <></>;
+                          }
+                          return (
+                            <li className="list-group-item p-0" key={link}>
+                              <a
+                                key={`link ${i + 1}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={link}
+                              >
+                                {url.host.replace("www.", "")}
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
                       {wishedAmountFooter(gift, firstFetch)}
                     </Card.Body>
                   </Card>
                 </Col>
-                // <Card key={gift.name}>
-                //   <Image src={gift.image_url} wrapped className="card-img" />
-                //   <Card.Content>
-                //     <Card.Header>{gift.name}</Card.Header>
-                //     <Card.Meta>
-                //       {gift.urls.map((link: string, i: number) => {
-                //         return (
-                //           <a
-                //             key={link}
-                //             target="_blank"
-                //             rel="noopener noreferrer"
-                //             href={link}
-                //           >
-                //             {`link ${i + 1}`}
-                //           </a>
-                //         );
-                //       })}
-                //     </Card.Meta>
-                //     <Card.Description>{gift.description}</Card.Description>
-                //   </Card.Content>
-                //   <Card.Content extra>
-                //     <a>
-                //       <Icon name="gift" />
-                //       wished: {gift.desired_amount}
-                //     </a>
-                //   </Card.Content>
-                // </Card>
               );
             })}
           </Row>
