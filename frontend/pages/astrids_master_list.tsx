@@ -10,13 +10,7 @@ import {
   Row,
   Alert,
 } from "react-bootstrap";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSortUp,
-  faSortDown,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { CaretUpFill, CaretDownFill, Trash } from "react-bootstrap-icons";
 
 import useSWR, { mutate } from "swr";
 
@@ -188,14 +182,14 @@ const EditForm = ({
               variant="danger"
               onClick={(e) => deleteGift(e, setFeedback, gift)}
             >
-              Delete <FontAwesomeIcon icon={faTrash} />
+              Delete <Trash />
             </Button>{" "}
             {giftBefore && (
               <Button
                 variant="info"
                 onClick={(e) => swapGifts(e, giftBefore, gift.gift_order)}
               >
-                <FontAwesomeIcon icon={faSortUp} />
+                <CaretUpFill />
               </Button>
             )}{" "}
             {giftAfter && (
@@ -203,7 +197,7 @@ const EditForm = ({
                 variant="info"
                 onClick={(e) => swapGifts(e, giftAfter, gift.gift_order)}
               >
-                <FontAwesomeIcon icon={faSortDown} />
+                <CaretDownFill />
               </Button>
             )}
           </>

@@ -77,3 +77,14 @@
 .cardFullWidth{
   flex-grow: 1
 }
+
+.setFlex {
+  display: flex;
+  align-items: center;
+}
+.flexElementGrow {
+  flex: 1;
+}
+.flexElementAlignEnd {
+  align-self: flex-end;
+}

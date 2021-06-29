@@ -7,9 +7,13 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
-import { Gift as GiftIcon } from "react-bootstrap-icons";
+import {
+  Gift as GiftIcon,
+  CaretUpFill,
+  CaretDownFill,
+} from "react-bootstrap-icons";
+import { Button } from "react-bootstrap";
 import { Gift } from "../types";
-
 import MyNavbar from "../components/navbar";
 import Footer from "../components/footer";
 import Header from "../components/header";
@@ -40,12 +44,42 @@ type GiftsProps = {
   giftList: Gift[];
 };
 
-const wishedAmountFooter = (gift: Gift, firstFetch: boolean) => {
+const myfun = (event, gift: Gift) => {
+  event.preventDefault();
+  console.log(gift);
+  console.log(event);
+};
+
+const wishedAmountFooter = (gift: Gift, firstFetch: boolean, session) => {
+  const disabled = session ? "" : "disabled";
+  const display = session ? "" : "d-none";
   return (
-    <Card.Footer className="text-muted">
+    <Card.Footer className={`${styles.setFlex} text-muted`}>
       <GiftIcon className="mr-2" />
-      {"wished: "}
-      {firstFetch ? <div className="spinner" /> : gift.desired_amount}
+      <div className={styles.flexElementGrow}>
+        {"Remaining: "}
+        {firstFetch ? (
+          <div className="spinner" />
+        ) : (
+          `${gift.desired_amount} \\ ${gift.desired_amount}`
+        )}
+      </div>
+      <div className={`${styles.flexElementAlignEnd} ${display}`}>
+        Claimed: 0
+      </div>
+      <Button
+        onClick={(e) => myfun(e, gift)}
+        className={`${styles.flexElementAlignEnd} m-0 p-0 px-1 mx-1 ${disabled}`}
+      >
+        <CaretUpFill />
+      </Button>
+      <Button
+        onClick={(e) => myfun(e, gift)}
+        className={`${styles.flexElementAlignEnd} m-0 p-0 px-1 mx-1 ${disabled}`}
+        variant="danger"
+      >
+        <CaretDownFill />
+      </Button>
     </Card.Footer>
   );
 };
@@ -124,7 +158,7 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
                           );
                         })}
                       </ul>
-                      {wishedAmountFooter(gift, firstFetch)}
+                      {wishedAmountFooter(gift, firstFetch, session)}
                     </Card.Body>
                   </Card>
                 </Col>
