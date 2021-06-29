@@ -2,10 +2,10 @@ import Container from "react-bootstrap/Container";
 import { useSession, signIn } from "next-auth/client";
 import { Form, Button, Alert } from "react-bootstrap";
 import React, { useState } from "react";
+import Link from "next/link";
 import MyNavbar from "../components/navbar";
 import Footer from "../components/footer";
 import Header from "../components/header";
-
 import styles from "../styles/Home.module.scss";
 
 const renderPair = ({ k, v }) => (
@@ -109,6 +109,12 @@ export default function Info(): React.ReactNode {
         <main className={styles.main}>
           <Container>
             <h2>Program</h2>
+            <p>
+              The wedding will be held on September 4th 2021 at{" "}
+              <Link href="/venue">
+                <a>Syverstad gård</a>
+              </Link>
+            </p>
             {program.map(renderPair)}
             <h2>Contact Information</h2>
             <p>Feel free to contact us if you have any questions.</p>

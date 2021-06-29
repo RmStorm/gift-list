@@ -77,7 +77,7 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
         <MyNavbar />
         <Header />
 
-        <h1 className={styles.title}>Wishlist</h1>
+        <h1 className={styles.title}>Wish list</h1>
         <Container>
           <p className={styles.description}>
             If you would like to bring a present to the party, we would greatly

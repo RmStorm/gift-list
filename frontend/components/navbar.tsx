@@ -46,7 +46,7 @@ export default function MyNavbar(): JSX.Element {
           <Nav className="mr-auto">
             <Nav.Link href="/info">Practical information</Nav.Link>
             <Nav.Link href="/venue">Venue</Nav.Link>
-            <Nav.Link href="/wishlist">Wishlist</Nav.Link>
+            <Nav.Link href="/wishlist">Wish list</Nav.Link>
             {ALLOWED_EDIT_USERS.includes(session?.user.email) ? (
               <Nav.Link href="/astrids_master_list">
                 Astrids master list

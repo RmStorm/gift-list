@@ -29,7 +29,8 @@ function Location(): React.ReactNode {
               We are getting married at Syverstad gård in Asker, 25 minutes by
               car from the centre of Oslo. Syverstad is a farm in operation,
               with sheep, bees, chickens and pigs. Next to this they have
-              renovated a 300 year old barn to a venue for festivities.
+              renovated a 300 year old barn and made it into a venue for
+              festivities.
             </p>
             <p>
               We are going for good weather on our big day, and we plan to have
@@ -39,14 +40,17 @@ function Location(): React.ReactNode {
               <a href="https://www.syverstadgard.no/">on their website</a>
             </p>
             <div className="row justify-content-center">
-              <div className="col-5">
+              <div className="col-8 col-md-5">
                 <Image
                   src="https://images.squarespace-cdn.com/content/v1/5a992b7d4611a0c9d66f38dd/1604653218215-DQH9IVJVEZ35YV29L3S4/fotografsiwpessar1-23.jpg?format=1000w"
                   rounded
                   fluid
                 />
               </div>{" "}
-              <div className="col-3">
+              <div className="col-12 col-md-0 d-md-none">
+                <br />
+              </div>
+              <div className="col-8 col-md-3">
                 <Image
                   src="https://images.squarespace-cdn.com/content/v1/5a992b7d4611a0c9d66f38dd/1566570068788-DORNBFH05055TRTS2UYL/D87C6727-6A04-41DA-A978-1415C2B17A9B.jpeg?format=1000w"
                   rounded
@@ -62,7 +66,7 @@ function Location(): React.ReactNode {
               guests who want to book a room close by. If you give our names and
               our address (Pilotveien 10, 0770 Oslo) upon booking you will get a
               10 % discount on the room. The prices listed below are already
-              discounted.
+              discounted. The rooms are reserved until august 4th.
             </p>
             <ul>
               <li>Single room: 1035 kr (1235 kr with a view)</li>
