@@ -169,7 +169,7 @@ async def change_gift_claim(gift_claim: GiftClaimUpdate, conn=Depends(api_pool_m
                 RETURNING  *;
                 ''', gift_claim.user_email, gift_claim.gift_id, gift_claim.change_in_amount)
             if not updated_gift_claim:
-                raise HTTPException(400, detail='Cannot add more claims')
+                raise HTTPException(400, detail='All items are claimed')
             logging.info(f'successfully updated claim row: {dict(updated_gift_claim[0])}')
     except asyncpg.CheckViolationError as e:
         logging.info(e)

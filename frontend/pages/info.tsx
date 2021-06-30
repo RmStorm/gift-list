@@ -3,6 +3,7 @@ import { useSession, signIn } from "next-auth/client";
 import { Form, Button, Alert } from "react-bootstrap";
 import React, { useState } from "react";
 import Link from "next/link";
+import { Session } from "next-auth";
 import MyNavbar from "../components/navbar";
 import Footer from "../components/footer";
 import Header from "../components/header";
@@ -29,7 +30,9 @@ const askFoodLogin = () => (
   </p>
 );
 
-const submitFoodPreference = (session, setFeedback) => async (event) => {
+const submitFoodPreference = (session: Session, setFeedback) => async (
+  event
+) => {
   event.preventDefault();
   const res = await fetch("/api/backend/allergy", {
     body: JSON.stringify({

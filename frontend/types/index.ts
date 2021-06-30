@@ -8,3 +8,5 @@ export type Gift = {
   image_url: string;
   modified_at?: Date;
 };
+
+export type GiftWithClaim = Gift & { claimed: number };

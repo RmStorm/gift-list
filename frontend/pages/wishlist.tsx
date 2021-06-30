@@ -1,7 +1,8 @@
 import { GetStaticProps } from "next";
-import useSWR from "swr";
+
+import useSWR, { mutate } from "swr";
 import { useSession } from "next-auth/client";
-import React, { useState } from "react";
+import React, { MouseEventHandler, useState } from "react";
 import Container from "react-bootstrap/Container";
 
 import Row from "react-bootstrap/Row";
@@ -13,7 +14,9 @@ import {
   CaretDownFill,
 } from "react-bootstrap-icons";
 import { Button } from "react-bootstrap";
-import { Gift } from "../types";
+import { Session } from "next-auth";
+import { GiftWithClaim } from "../types";
+
 import MyNavbar from "../components/navbar";
 import Footer from "../components/footer";
 import Header from "../components/header";
@@ -40,48 +43,93 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-type GiftsProps = {
-  giftList: Gift[];
+const getGiftClaimKey = (session: Session) => {
+  if (session) {
+    return [
+      `/api/backend/gift_claim?${new URLSearchParams({
+        user_email: session.user.email,
+      })}`,
+    ];
+  }
+  return null;
 };
 
-const myfun = (event, gift: Gift) => {
+const updateGiftCLaim = async (
+  event,
+  gift: GiftWithClaim,
+  session: Session,
+  amount: number
+) => {
   event.preventDefault();
-  console.log(gift);
-  console.log(event);
+  const res = await fetch("/api/backend/gift_claim", {
+    body: JSON.stringify({
+      user_email: session.user.email,
+      gift_id: gift.id,
+      change_in_amount: amount,
+    }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  });
+  if (res.status === 200) {
+    mutate("/api/backend/gifts");
+    mutate(getGiftClaimKey(session));
+    return;
+  }
+  console.log(`houston.. we got a problem: ${await res.text()}`);
 };
 
-const wishedAmountFooter = (gift: Gift, firstFetch: boolean, session) => {
-  const disabled = session ? "" : "disabled";
-  const display = session ? "" : "d-none";
+interface CLaimMap {
+  [key: number]: number;
+}
+
+interface WishedAmountFooterInput {
+  gift: GiftWithClaim;
+  firstFetch: boolean;
+  numberClaimedForGift: number;
+}
+
+const WishedAmountFooter = ({
+  gift,
+  firstFetch,
+  numberClaimedForGift,
+}: WishedAmountFooterInput) => {
+  const [session] = useSession();
+
   return (
     <Card.Footer className={`${styles.setFlex} text-muted`}>
       <GiftIcon className="mr-2" />
       <div className={styles.flexElementGrow}>
-        {"Remaining: "}
+        {"Left: "}
         {firstFetch ? (
           <div className="spinner" />
         ) : (
-          `${gift.desired_amount} \\ ${gift.desired_amount}`
+          `${gift.desired_amount - gift.claimed} \\ ${gift.desired_amount}`
         )}
       </div>
-      <div className={`${styles.flexElementAlignEnd} ${display}`}>
-        Claimed: 0
+      <div className={`${styles.flexElementAlignEnd} ${!session && "d-none"}`}>
+        Claimed: {numberClaimedForGift}
       </div>
       <Button
-        onClick={(e) => myfun(e, gift)}
-        className={`${styles.flexElementAlignEnd} m-0 p-0 px-1 mx-1 ${disabled}`}
+        onClick={(e) => updateGiftCLaim(e, gift, session, 1)}
+        className={`${styles.flexElementAlignEnd} m-0 p-0 px-1 mx-1`}
+        disabled={session && gift.claimed >= gift.desired_amount}
       >
         <CaretUpFill />
       </Button>
       <Button
-        onClick={(e) => myfun(e, gift)}
-        className={`${styles.flexElementAlignEnd} m-0 p-0 px-1 mx-1 ${disabled}`}
+        onClick={(e) => updateGiftCLaim(e, gift, session, -1)}
+        className={`${styles.flexElementAlignEnd} m-0 p-0 px-1 mx-1`}
         variant="danger"
+        disabled={session && numberClaimedForGift <= 0}
       >
         <CaretDownFill />
       </Button>
     </Card.Footer>
   );
+};
+
+type GiftsProps = {
+  giftList: GiftWithClaim[];
 };
 
 export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
@@ -96,10 +144,27 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
 
   const { data, error } = useSWR("/api/backend/gifts", fetcher, {
     revalidateOnMount: true,
-    refreshInterval: 5,
+    refreshInterval: 3500,
     initialData: giftList,
     onSuccess,
   });
+
+  const giftClaimResult = useSWR(getGiftClaimKey(session), fetcher, {
+    revalidateOnMount: true,
+    refreshInterval: 3500,
+  });
+
+  let claimedGiftsMap: undefined | CLaimMap;
+  if (giftClaimResult?.data) {
+    claimedGiftsMap = giftClaimResult?.data.reduce((obj, item) => {
+      return {
+        ...obj,
+        [item.gift_id]: item.amount,
+      };
+    }, {});
+  }
+  const numberClaimedForGift = (gift: GiftWithClaim) =>
+    claimedGiftsMap?.[gift.id] || 0;
 
   if (!data || loading) return <div>loading...</div>;
 
@@ -128,7 +193,7 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
               : "please log in to claim it so gifts are not given multiple times!"}
           </p>
           <Row xs={1} sm={1} md={2} lg={3} xl={3}>
-            {data.map((gift) => {
+            {data.map((gift: GiftWithClaim) => {
               return (
                 <Col key={gift.name} className="d-flex py-2">
                   <Card border="default" className={styles.cardFullWidth}>
@@ -158,7 +223,11 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
                           );
                         })}
                       </ul>
-                      {wishedAmountFooter(gift, firstFetch, session)}
+                      <WishedAmountFooter
+                        gift={gift}
+                        firstFetch={firstFetch}
+                        numberClaimedForGift={numberClaimedForGift(gift)}
+                      />
                     </Card.Body>
                   </Card>
                 </Col>
