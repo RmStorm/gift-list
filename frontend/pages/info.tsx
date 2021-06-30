@@ -117,8 +117,23 @@ export default function Info(): React.ReactNode {
               <Link href="/venue">
                 <a>Syverstad gård</a>
               </Link>
+              , this is our current idea for the program:
             </p>
             {program.map(renderPair)}
+            <h2>Corona</h2>
+            <p>
+              Currently we hope to have the wedding without any restrictions due
+              to corona. We dare to do so because we expect everybody to have
+              gotten at least one dose of the vaccine by the middle of August.
+              However, things might change quickly. This website will be kept up
+              to date with the most recent information. If we need to change any
+              plans we will also send out an email or message to everyone.
+            </p>
+            <p>
+              We also ask you to let us know if you are not vaccinated by
+              September, so that we can navigate the rules that apply when
+              September rolls around.
+            </p>
             <h2>Contact Information</h2>
             <p>Feel free to contact us if you have any questions.</p>
             {contactInformationRoaldAstrid.map(renderPair)}
@@ -136,7 +151,8 @@ export default function Info(): React.ReactNode {
             <p className={styles.infoText}>
               We plan to have the ceremony outdoors in the garden, if the
               weather allows it. Because of that we do not recommend wearing
-              your sharpest stilettos.
+              your sharpest stilettos. In case of rain we will move the ceremony
+              indoors.
             </p>
 
             <p className={styles.infoText}>

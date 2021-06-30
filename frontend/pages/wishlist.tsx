@@ -144,14 +144,14 @@ export default function Gifts({ giftList }: GiftsProps): React.ReactNode {
 
   const { data, error } = useSWR("/api/backend/gifts", fetcher, {
     revalidateOnMount: true,
-    refreshInterval: 3500,
+    refreshInterval: 200,
     initialData: giftList,
     onSuccess,
   });
 
   const giftClaimResult = useSWR(getGiftClaimKey(session), fetcher, {
     revalidateOnMount: true,
-    refreshInterval: 3500,
+    refreshInterval: 200,
   });
 
   let claimedGiftsMap: undefined | CLaimMap;
