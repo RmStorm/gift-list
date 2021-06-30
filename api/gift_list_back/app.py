@@ -4,7 +4,8 @@ import logging
 import asyncpg
 from fastapi import FastAPI, Depends, HTTPException
 
-from schemas import Gift, GiftCreate, GiftUpdate, GiftDelete, GiftSwap, AllergyPut
+from schemas import Gift, GiftCreate, GiftUpdate, GiftDelete, GiftSwap, AllergyPut, GiftClaimUpdate,  \
+    GiftClaim
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI(docs_url="/", title="GIFT LIST API", version="v1")
@@ -64,7 +65,11 @@ async def root():
 @app.get("/gifts")
 async def get_gifts(conn=Depends(api_pool_manager.get_conn)):
     async with conn.transaction():
-        all_gifts = await conn.fetch("SELECT * FROM gifts")
+        all_gifts = await conn.fetch("""
+            SELECT gifts.*, COALESCE(SUM(gift_claims.claimed_amount), 0) as claimed FROM gifts
+            LEFT JOIN   gift_claims ON gifts.id = gift_claims.claimed_gift_id
+            GROUP BY gift_claims.claimed_gift_id, gifts.id
+        """)
     return [Gift(**gift) for gift in sorted(all_gifts, key=lambda k: k['gift_order'])]
 
 
@@ -112,7 +117,6 @@ async def delete_gifts(gift: GiftDelete, conn=Depends(api_pool_manager.get_conn)
 
 @app.put("/allergy")
 async def put_allergy(allergy: AllergyPut, conn=Depends(api_pool_manager.get_conn)):
-    logging.info(allergy)
     async with conn.transaction():
         new_user_row = await conn.execute('''
             UPDATE users
@@ -121,5 +125,52 @@ async def put_allergy(allergy: AllergyPut, conn=Depends(api_pool_manager.get_con
             WHERE email = $1;
             ''', allergy.user_email, allergy.food_preference)
         if new_user_row == 'UPDATE 0':
-            raise HTTPException(status_code=404, detail="Item not found")
-        logging.info('Successfully updated user')
+            raise HTTPException(404, detail="Item not found")
+        logging.info(f'Successfully updated user with allergy: {allergy}')
+
+
+@app.get("/gift_claim")
+async def get_gift_claim(user_email: str, conn=Depends(api_pool_manager.get_conn)) -> list[GiftClaim]:
+    async with conn.transaction():
+        claims = await conn.fetch("""
+            Select * from gift_claims Where claiming_user_id=(Select id from users where email = $1) ;
+        """, user_email)
+        return [GiftClaim(gift_id=c['claimed_gift_id'], amount=c['claimed_amount']) for c in claims]
+
+
+@app.post("/gift_claim")
+async def change_gift_claim(gift_claim: GiftClaimUpdate, conn=Depends(api_pool_manager.get_conn)):
+    async with conn.transaction():
+        await conn.execute("""
+            INSERT INTO gift_claims (claiming_user_id, claimed_gift_id, claimed_amount)
+            VALUES ((SELECT id from users where email = $1), $2, 0) ON CONFLICT DO NOTHING;
+        """, gift_claim.user_email, gift_claim.gift_id)
+    try:
+        async with conn.transaction():
+            updated_gift_claim = await conn.fetch('''
+                WITH lock_parent AS (
+                   SELECT gifts.id
+                   FROM   gifts
+                   WHERE  gifts.id = $2
+                   FOR    NO KEY UPDATE
+                   )
+                 , total_claims AS (
+                   SELECT gifts.id, gifts.desired_amount, gift_claims.claimed_gift_id, SUM(gift_claims.claimed_amount) AS total_claimed
+                   FROM   gift_claims
+                   JOIN   gifts ON gifts.id = gift_claims.claimed_gift_id
+                   WHERE  gift_claims.claimed_gift_id = $2
+                   GROUP BY gift_claims.claimed_gift_id, gifts.id
+                )
+                UPDATE gift_claims
+                set claimed_amount = claimed_amount+$3
+                FROM users
+                WHERE users.email = $1 and gift_claims.claiming_user_id = users.id and gift_claims.claimed_gift_id = $2
+                AND EXISTS (SELECT 1 from total_claims WHERE total_claims.desired_amount+1>(total_claims.total_claimed+$3))
+                RETURNING  *;
+                ''', gift_claim.user_email, gift_claim.gift_id, gift_claim.change_in_amount)
+            if not updated_gift_claim:
+                raise HTTPException(400, detail='Cannot add more claims')
+            logging.info(f'successfully updated claim row: {dict(updated_gift_claim[0])}')
+    except asyncpg.CheckViolationError as e:
+        logging.info(e)
+        raise HTTPException(400, detail='Cannot remove more claims') from e

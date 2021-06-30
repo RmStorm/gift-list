@@ -34,11 +34,24 @@ class GiftUpdate(GiftCreate, GiftDelete):
 
 class Gift(GiftUpdate):
     modified_at: dt.datetime
+    claimed: int
 
 
 class AllergyPut(BaseModel):
     user_email: str
     food_preference: str
+
+
+class GiftClaim(BaseModel):
+    gift_id: int
+    amount: int
+
+
+class GiftClaimUpdate(BaseModel):
+    user_email: str
+    gift_id: int
+    change_in_amount: int
+
 
 class GoogleToken(BaseModel):
     iss: str
