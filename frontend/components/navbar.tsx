@@ -26,7 +26,7 @@ function UserNavBarSnippet(): JSX.Element {
   );
 }
 
-const ALLOWED_EDIT_USERS = ["astridhult4@gmail.com", "roaldstorm@gmail.com"];
+const ADMIN_USERS = ["astridhult4@gmail.com", "roaldstorm@gmail.com"];
 
 export default function MyNavbar(): JSX.Element {
   const [session] = useSession();
@@ -47,7 +47,7 @@ export default function MyNavbar(): JSX.Element {
             <Nav.Link href="/info">Practical information</Nav.Link>
             <Nav.Link href="/venue">Venue</Nav.Link>
             <Nav.Link href="/wishlist">Wish list</Nav.Link>
-            {ALLOWED_EDIT_USERS.includes(session?.user.email) ? (
+            {ADMIN_USERS.includes(session?.user.email) ? (
               <Nav.Link href="/astrids_master_list">
                 Astrids master list
               </Nav.Link>
@@ -62,4 +62,4 @@ export default function MyNavbar(): JSX.Element {
   );
 }
 
-export { ALLOWED_EDIT_USERS };
+export { ADMIN_USERS };

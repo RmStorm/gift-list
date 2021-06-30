@@ -17,7 +17,7 @@ import useSWR, { mutate } from "swr";
 import styles from "../styles/master_list.module.css";
 import { Gift } from "../types";
 
-import MyNavbar, { ALLOWED_EDIT_USERS } from "../components/navbar";
+import MyNavbar, { ADMIN_USERS } from "../components/navbar";
 import Footer from "../components/footer";
 import Header from "../components/header";
 
@@ -275,7 +275,7 @@ export default function AstridList(): React.ReactNode {
   const [newGiftCount, setNewGiftCount] = useState(0);
 
   if (!data || loading) return <div>loading...</div>;
-  if (!ALLOWED_EDIT_USERS.includes(session?.user.email)) {
+  if (!ADMIN_USERS.includes(session?.user.email)) {
     if (typeof window !== "undefined") {
       Router.push("/");
     }
